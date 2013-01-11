@@ -134,14 +134,14 @@ def _encode_buffer(string, f):
 def _encode_iterable(iterable, f):
 	f.write(_TYPE_LIST)
 	for item in iterable:
-		bencode(f, item)
+		bencode(item, f)
 	f.write(_TYPE_END)
 
 def _encode_mapping(mapping, f):
 	f.write(_TYPE_DICT)
 	for key, value in mapping.items():
-		_encode_buffer(f, key)
-		bencode(f, value)
+		_encode_buffer(key, f)
+		bencode(value, f)
 	f.write(_TYPE_END)
 
 def bencode(data, f):
@@ -165,7 +165,7 @@ def bencode_buffer(data):
 	of the serialized sata
 	"""
 	with BytesIO() as f:
-		bencode(f, data)
+		bencode(data, f)
 		return f.getvalue()
 
 def main():
