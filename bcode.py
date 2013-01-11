@@ -104,7 +104,7 @@ def bdecode(f):
 	if btype is not None:
 		f.seek(-1, SEEK_CUR)
 		return DECODERS[btype](f)
-	else:
+	else: #Used in dicts and lists to designate an end
 		return None
 
 def bdecode_buffer(data):
