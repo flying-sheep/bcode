@@ -3,10 +3,11 @@
 """
 bencode/decode library.
 
-bencoing is used in bittorrent files
+bencoding is used in bittorrent files
+
+use the exposed functions to encode/deocde them.
 """
 
-import sys
 from io import BytesIO, SEEK_CUR
 try: #py 3.3
 	from collections.abc import Iterable, Mapping
