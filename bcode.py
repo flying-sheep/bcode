@@ -99,7 +99,6 @@ TYPES = {
 for byte in _TYPES_STR:
 	TYPES[bytes([byte])] = _decode_buffer #b'0': str, b'1': str, …
 
-
 def bdecode(f_or_data):
 	"""
 	bdecodes data by looking up the type byte,
@@ -114,7 +113,9 @@ def bdecode(f_or_data):
 	if isinstance(f_or_data, bytes):
 		f_or_data = BytesIO(f_or_data)
 	
-	first_byte = f_or_data.peek(1)[:1] #TODO: better
+	#TODO: the following like is the only one that needs readahead.
+	#peek returns a arbitrary amount of bytes, so we have to slice.
+	first_byte = f_or_data.peek(1)[:1]
 	btype = TYPES.get(first_byte)
 	if btype is not None:
 		return btype(f_or_data)
