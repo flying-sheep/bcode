@@ -14,22 +14,6 @@ try: #py 3.3
 except ImportError:
 	from collections     import Iterable, Mapping
 
-_TYPE_INT  = b'i'
-_TYPE_LIST = b'l'
-_TYPE_DICT = b'd'
-_TYPE_END  = b'e'
-_TYPE_SEP  = b':'
-_TYPES_STR = b'0123456789'
-
-TYPES = {
-	_TYPE_INT:  int,
-	_TYPE_LIST: list,
-	_TYPE_DICT: dict,
-	_TYPE_END:  None,
-	#_TYPE_SEP only appears in strings, not here
-}
-for byte in _TYPES_STR:
-	TYPES[bytes([byte])] = str #b'0': str, b'1': str, …
 
 def _readuntil(f, end=_TYPE_END):
 	"""Helper function to read bytes until a certain end byte is hit"""
@@ -89,12 +73,23 @@ def _decode_dict(f):
 			ret[key] = bdecode(f)
 	return ret
 
-DECODERS = {
-	int:  _decode_int,
-	str:  _decode_buffer,
-	list: _decode_list,
-	dict: _decode_dict,
+_TYPE_INT  = b'i'
+_TYPE_LIST = b'l'
+_TYPE_DICT = b'd'
+_TYPE_END  = b'e'
+_TYPE_SEP  = b':'
+_TYPES_STR = b'0123456789'
+
+TYPES = {
+	_TYPE_INT:  _decode_int,
+	_TYPE_LIST: _decode_list,
+	_TYPE_DICT: decode_dict,
+	_TYPE_END:  None,
+	#_TYPE_SEP only appears in strings, not here
 }
+for byte in _TYPES_STR:
+	TYPES[bytes([byte])] = _decode_buffer #b'0': str, b'1': str, …
+
 
 def bdecode(f):
 	"""
@@ -105,8 +100,7 @@ def bdecode(f):
 	"""
 	btype = TYPES[f.read(1)]
 	if btype is not None:
-		f.seek(-1, SEEK_CUR)
-		return DECODERS[btype](f)
+		return btype(f)
 	else: #Used in dicts and lists to designate an end
 		return None
 
