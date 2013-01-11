@@ -5,7 +5,7 @@ bencode/decode library.
 
 bencoding is used in bittorrent files
 
-use the exposed functions to encode/deocde them.
+use the exposed functions to encode/decode them.
 """
 
 from io import BytesIO, SEEK_CUR
