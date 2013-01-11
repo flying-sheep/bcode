@@ -21,16 +21,6 @@ _TYPE_END  = b'e'
 _TYPE_SEP  = b':'
 _TYPES_STR = b'0123456789'
 
-TYPES = {
-	_TYPE_INT:  int,
-	_TYPE_LIST: list,
-	_TYPE_DICT: dict,
-	_TYPE_END:  None,
-	#_TYPE_SEP only appears in strings, not here
-}
-for byte in _TYPES_STR:
-	TYPES[bytes([byte])] = str #b'0': str, b'1': str, …
-
 def assert_btype(byte, typ):
 	if not byte == typ:
 		raise TypeError(
@@ -99,12 +89,16 @@ def _decode_dict(f):
 			ret[key] = bdecode(f)
 	return ret
 
-DECODERS = {
-	int:  _decode_int,
-	str:  _decode_buffer,
-	list: _decode_list,
-	dict: _decode_dict,
+TYPES = {
+	_TYPE_INT:  _decode_int,
+	_TYPE_LIST: _decode_list,
+	_TYPE_DICT: _decode_dict,
+	_TYPE_END:  None,
+	#_TYPE_SEP only appears in strings, not here
 }
+for byte in _TYPES_STR:
+	TYPES[bytes([byte])] = _decode_buffer #b'0': str, b'1': str, …
+
 
 def bdecode(f_or_data):
 	"""
@@ -123,7 +117,7 @@ def bdecode(f_or_data):
 	first_byte = f_or_data.peek(1)[:1] #TODO: better
 	btype = TYPES.get(first_byte)
 	if btype is not None:
-		return DECODERS[btype](f_or_data)
+		return btype(f_or_data)
 	else: #Used in dicts and lists to designate an end
 		assert_btype(f_or_data.read(1), _TYPE_END)
 		return None
