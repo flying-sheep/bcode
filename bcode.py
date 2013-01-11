@@ -5,7 +5,7 @@ bencode/decode library.
 
 bencoding is used in bittorrent files
 
-use the exposed functions to encode/deocde them.
+use the exposed functions to encode/decode them.
 """
 
 from io import BytesIO
@@ -65,7 +65,9 @@ def _decode_buffer(f):
 	String types are normal (byte)strings
 	starting with an integer followed by ':'
 	which designates the string’s length.
-	Since there’s
+	
+	Since there’s no way to specify the byte type
+	in bencoded files, we have to guess
 	"""
 	strlen = int(_readuntil(f, _TYPE_SEP))
 	buf = f.read(strlen)
