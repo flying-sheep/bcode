@@ -170,7 +170,7 @@ def bencode(data, f=None):
 	as strings and mappings are iterable.
 	
 	If f is None, it writes to a byte buffer
-	and returns the 
+	and returns a bytestring
 	"""
 	if f is None:
 		f = BytesIO()
