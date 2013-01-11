@@ -8,7 +8,7 @@ bencoding is used in bittorrent files
 use the exposed functions to encode/deocde them.
 """
 
-from io import BytesIO, SEEK_CUR
+from io import BytesIO
 try: #py 3.3
 	from collections.abc import Iterable, Mapping
 except ImportError:
@@ -31,6 +31,16 @@ TYPES = {
 for byte in _TYPES_STR:
 	TYPES[bytes([byte])] = str #b'0': str, b'1': str, …
 
+def assert_btype(byte, typ):
+	if not byte == typ:
+		raise TypeError(
+			'Tried to decode type {!r} with identifier {!r} but got identifier {!r} instead'
+			.format(TYPES[typ] or 'End', typ, byte))
+
+################
+### Decoding ###
+################
+
 def _readuntil(f, end=_TYPE_END):
 	"""Helper function to read bytes until a certain end byte is hit"""
 	buf = bytearray()
@@ -47,7 +57,7 @@ def _decode_int(f):
 	Integer types are normal ascii integers
 	Delimited at the start with 'i' and the end with 'e'
 	"""
-	assert f.read(1) == _TYPE_INT
+	assert_btype(f.read(1), _TYPE_INT)
 	return int(_readuntil(f))
 
 def _decode_buffer(f):
@@ -65,7 +75,7 @@ def _decode_buffer(f):
 		return buf
 
 def _decode_list(f):
-	assert f.read(1) == _TYPE_LIST
+	assert_btype(f.read(1), _TYPE_LIST)
 	ret = []
 	while True:
 		item = bdecode(f)
@@ -76,7 +86,7 @@ def _decode_list(f):
 	return ret
 
 def _decode_dict(f):
-	assert f.read(1) == _TYPE_DICT
+	assert_btype(f.read(1), _TYPE_DICT)
 	ret = {}
 	while True:
 		key = bdecode(f)
@@ -94,26 +104,27 @@ DECODERS = {
 	dict: _decode_dict,
 }
 
-def bdecode(f):
+def bdecode(f_or_data):
 	"""
-	bdecodes data contained in a file f opened in bytes mode.
-	works by looking up the type byte,
+	bdecodes data by looking up the type byte,
 	and using it to look up the respective decoding function,
 	which in turn is used to return the decoded object
+	
+	The parameter can be a file opened in bytes mode,
+	bytes or a string (the last of which will be decoded)
 	"""
-	btype = TYPES[f.read(1)]
+	if isinstance(f_or_data, str):
+		f_or_data = f_or_data.encode()
+	if isinstance(f_or_data, bytes):
+		f_or_data = BytesIO(f_or_data)
+	
+	first_byte = f_or_data.peek(1)[:1] #TODO: better
+	btype = TYPES.get(first_byte)
 	if btype is not None:
-		f.seek(-1, SEEK_CUR)
-		return DECODERS[btype](f)
+		return DECODERS[btype](f_or_data)
 	else: #Used in dicts and lists to designate an end
+		assert_btype(f_or_data.read(1), _TYPE_END)
 		return None
-
-def bdecode_buffer(data):
-	"""Convenience wrapper around bdecode that accepts strings or bytes"""
-	if isinstance(data, str):
-		data = data.encode()
-	with BytesIO(data) as f:
-		return bdecode(f)
 
 ################
 ### Encoding ###
@@ -145,12 +156,7 @@ def _encode_mapping(mapping, f):
 		bencode(value, f)
 	f.write(_TYPE_END)
 
-def bencode(data, f):
-	"""
-	Writes a serializable data piece to f
-	The order of tests is nonarbitrary,
-	as strings and mappings are iterable.
-	"""
+def _bencode_to_file(data, f):
 	if isinstance(data, int):
 		_encode_int(data, f)
 	elif isinstance(data, (str, bytes)):
@@ -160,14 +166,21 @@ def bencode(data, f):
 	elif isinstance(data, Iterable):
 		_encode_iterable(data, f)
 
-def bencode_buffer(data):
+def bencode(data, f=None):
 	"""
-	Convenience wrapper around bencode that returns a byte array
-	of the serialized sata
+	Writes a serializable data piece to f
+	The order of tests is nonarbitrary,
+	as strings and mappings are iterable.
+	
+	If f is None, it writes to a byte buffer
+	and returns the 
 	"""
-	with BytesIO() as f:
-		bencode(data, f)
+	if f is None:
+		f = BytesIO()
+		_bencode_to_file(data, f)
 		return f.getvalue()
+	else:
+		_bencode_to_file(data, f)
 
 def main():
 	import sys, pprint
