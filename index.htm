@@ -2,8 +2,89 @@
 <html>
 <head>
 
+<meta charset="utf-8">
+<title>bcoding</title>
+
+<style>
+@import url(http://fonts.googleapis.com/css?family=Averia+Serif+Libre:300);
+@import url(http://fonts.googleapis.com/css?family=Oxygen+Mono);
+@import url(http://softwaremaniacs.org/media/soft/highlight/styles/rainbow.css);
+
+html {
+	background-color: #666;
+	height: 100%;
+}
+body {
+	color: #999;
+	background-color: #444;
+	font-family: sans-serif;
+	width: 36em;
+	height: 100%;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+h1 {margin-top: 0}
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Averia Serif Libre", serif;
+	font-weight: 300;
+}
+
+pre code {
+	font-family: "Oxygen Mono", monospace;
+    background: none #555 !important;
+	margin: 0 -20px;
+	padding: 20px 40px !important;
+}
+pre {margin: 0}
+.comment {font-family: sans-serif}
+
+a:link, a:visited {
+	color: #fff;
+	text-decoration: none;
+}
+a:link:hover, a:visited:hover {text-decoration: underline}
+a:link img, a:visited img {border: none}
+</style>
+<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+<script>
+hljs.initHighlightingOnLoad();
+</script>
+
 </head>
 <body>
+
+<a href="https://github.com/flying-sheep/bcode">
+	<img style="position: absolute; top: 0; right: 0" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub">
+</a>
+
+<h1>bcoding</h1>
+
+yet another… but mine is fast as hell.
+
+<h2>install</h2>
+<pre><code class="bash">pip install <a href="http://pypi.python.org/pypi/bcoding" title="Cheeseshop">bcoding</a></code></pre>
+
+<h2>use</h2>
+<pre><code class="python">from bcoding import bencode, bdecode</code></pre>
+
+<h3>decoding</h3>
+
+<pre><code class="python"># decoding from files or streams:
+with open('some.torrent') as f:
+	torrent = bdecode(f)
+	print(torrent['announce'])
+
+# decoding from (byte)strings:
+one = bdecode(b'i1e')</code></pre>
+
+<h3>encoding (note that any iterable or mapping can be bencoded)</h3>
+
+<pre><code class="python"># encoding into files or streams:
+bencode({'a': 0}, sys.stdout.buffer) # ⇒ d1:ai0ee
+
+# encoding to bytestrings:
+assert bencode(('a', 0)) == b'l1:ai0ee'</code></pre>
 
 </body>
 </html>
