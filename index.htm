@@ -70,18 +70,20 @@ yet another… but mine is fast as hell.
 
 <h3>decoding</h3>
 
-<pre><code class="python"># decoding from files or streams:
-with open('some.torrent') as f:
-	torrent = bdecode(f)
-	print(torrent['announce'])
+<pre><code class="python"># decoding from binary files or streams:
+with open('some.torrent', 'rb') as f:
+    torrent = bdecode(f)
+    print(torrent['announce'])
 
 # decoding from (byte)strings:
-one = bdecode(b'i1e')</code></pre>
+one = bdecode(b'i1e')
+two = bdecode('3:two')</code></pre>
 
 <h3>encoding (note that any iterable or mapping can be bencoded)</h3>
 
-<pre><code class="python"># encoding into files or streams:
-bencode({'a': 0}, sys.stdout.buffer) # ⇒ d1:ai0ee
+<pre><code class="python"># encoding into binary files or streams:
+bencode({'a': 0}, sys.stdout.buffer)
+#⇒ d1:ai0ee
 
 # encoding to bytestrings:
 assert bencode(('a', 0)) == b'l1:ai0ee'</code></pre>
