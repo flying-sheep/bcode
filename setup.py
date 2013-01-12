@@ -8,4 +8,15 @@ setup(
 	author='Phil Schaf',
 	author_email='flying-sheep@web.de',
 	license='MIT',
-	url='http://flying-sheep.github.com/bcode')
+	url='http://flying-sheep.github.com/bcode',
+	classifiers=[
+		'Development Status :: 5 - Production/Stable',
+		'Environment :: Console',
+		'Intended Audience :: Developers',
+		'License :: OSI Approved :: MIT License',
+		'Operating System :: OS Independent',
+		'Programming Language :: Python',
+		'Programming Language :: Python :: 3.2',
+		'Programming Language :: Python :: 3.3',
+		'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
+	])
