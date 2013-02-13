@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
 	name='bcoding',
-	version='1.0',
+	version='1.1',
 	py_modules=['bcoding',],
 	description='bencoding & -decoding library',
 	author='Phil Schaf',
@@ -16,6 +16,7 @@ setup(
 		'License :: OSI Approved :: MIT License',
 		'Operating System :: OS Independent',
 		'Programming Language :: Python',
+		'Programming Language :: Python :: 2.7',
 		'Programming Language :: Python :: 3.2',
 		'Programming Language :: Python :: 3.3',
 		'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator',
