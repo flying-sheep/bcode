@@ -167,6 +167,10 @@ def _bencode_to_file(data, f):
 		_encode_mapping(data, f)
 	elif isinstance(data, Iterable):
 		_encode_iterable(data, f)
+	else:
+		raise TypeError(
+			'the passed value {} of type {} is not bencodable.'
+			.format(data, type(data).__name__))
 
 def bencode(data, f=None):
 	"""
