@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- encoding: utf-8 -*-
 
 """
 bencode/decode library.
@@ -8,7 +9,7 @@ bencoding is used in bittorrent files
 use the exposed functions to encode/decode them.
 """
 
-from io import BytesIO
+from io import BytesIO, SEEK_CUR
 try: #py 3.3
 	from collections.abc import Iterable, Mapping
 except ImportError:
@@ -115,7 +116,11 @@ def bdecode(f_or_data):
 	
 	#TODO: the following like is the only one that needs readahead.
 	#peek returns a arbitrary amount of bytes, so we have to slice.
-	first_byte = f_or_data.peek(1)[:1]
+	if f_or_data.seekable():
+		first_byte = f_or_data.read(1)
+		f_or_data.seek(-1, SEEK_CUR)
+	else:
+		first_byte = f_or_data.peek(1)[:1]
 	btype = TYPES.get(first_byte)
 	if btype is not None:
 		return btype(f_or_data)
