@@ -35,12 +35,12 @@ def assert_btype(byte, typ):
 def _readuntil(f, end=_TYPE_END):
 	"""Helper function to read bytes until a certain end byte is hit"""
 	buf = bytearray()
-	while True:
+	byte = f.read(1)
+	while byte != end:
+		if byte == b'':
+			raise ValueError('File ended unexpectedly. Expected end byte {}.'.format(end))
+		buf += byte
 		byte = f.read(1)
-		if byte != end:
-			buf += byte
-		else:
-			break
 	return buf
 
 def _decode_int(f):
@@ -62,6 +62,10 @@ def _decode_buffer(f):
 	"""
 	strlen = int(_readuntil(f, _TYPE_SEP))
 	buf = f.read(strlen)
+	if not len(buf) == strlen:
+		raise ValueError(
+			'string expected to be {} bytes long but the file ended after {} bytes'
+			.format(strlen, len(buf)))
 	try:
 		return buf.decode()
 	except UnicodeDecodeError:
@@ -70,24 +74,20 @@ def _decode_buffer(f):
 def _decode_list(f):
 	assert_btype(f.read(1), _TYPE_LIST)
 	ret = []
-	while True:
+	item = bdecode(f)
+	while item is not None:
+		ret.append(item)
 		item = bdecode(f)
-		if item is None:
-			break
-		else:
-			ret.append(item)
 	return ret
 
 def _decode_dict(f):
 	assert_btype(f.read(1), _TYPE_DICT)
 	ret = {}
-	while True:
+	key = bdecode(f)
+	while key is not None:
+		assert isinstance(key, (str, bytes))
+		ret[key] = bdecode(f)
 		key = bdecode(f)
-		if key is None:
-			break
-		else:
-			assert isinstance(key, (str, bytes))
-			ret[key] = bdecode(f)
 	return ret
 
 TYPES = {
