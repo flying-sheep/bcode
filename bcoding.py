@@ -103,8 +103,7 @@ TYPES = {
 	_TYPE_END:  None,
 	#_TYPE_SEP only appears in strings, not here
 }
-for byte in _TYPES_STR:
-	TYPES[byte] = _decode_buffer #b'0': _decode_buffer, b'1': _decode_buffer, …
+TYPES.update({byte: _decode_buffer for byte in _TYPES_STR}) #b'0': _decode_buffer, b'1': _decode_buffer, …
 
 def bdecode(f_or_data):
 	"""
@@ -120,7 +119,7 @@ def bdecode(f_or_data):
 	if isinstance(f_or_data, bytes):
 		f_or_data = BytesIO(f_or_data)
 	
-	#TODO: the following like is the only one that needs readahead.
+	#TODO: the following line is the only one that needs readahead.
 	#peek returns a arbitrary amount of bytes, so we have to slice.
 	if f_or_data.seekable():
 		first_byte = f_or_data.read(1)
