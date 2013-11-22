@@ -10,17 +10,23 @@ use the exposed functions to encode/decode them.
 """
 
 from io import BytesIO, SEEK_CUR
+from string import digits
 try: #py 3.3
 	from collections.abc import Iterable, Mapping
 except ImportError:
 	from collections     import Iterable, Mapping
+
+try:
+	str = unicode
+except NameError:
+	pass
 
 _TYPE_INT  = b'i'
 _TYPE_LIST = b'l'
 _TYPE_DICT = b'd'
 _TYPE_END  = b'e'
 _TYPE_SEP  = b':'
-_TYPES_STR = b'0123456789'
+_TYPES_STR = [d.encode() for d in digits]
 
 def assert_btype(byte, typ):
 	if not byte == typ:
@@ -98,7 +104,7 @@ TYPES = {
 	#_TYPE_SEP only appears in strings, not here
 }
 for byte in _TYPES_STR:
-	TYPES[bytes([byte])] = _decode_buffer #b'0': str, b'1': str, …
+	TYPES[byte] = _decode_buffer #b'0': _decode_buffer, b'1': _decode_buffer, …
 
 def bdecode(f_or_data):
 	"""
