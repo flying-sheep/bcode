@@ -1,9 +1,12 @@
-from distutils.core import setup
+try:
+	from setuptools import setup
+except ImportError:
+	from distutils.core import setup
 
 setup(
 	name='bcoding',
 	version='1.5',
-	py_modules=['bcoding',],
+	py_modules=['bcoding'],
 	description='bencoding & -decoding library',
 	author='Phil Schaf',
 	author_email='flying-sheep@web.de',
