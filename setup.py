@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
 	name='bcoding',
-	version='1.4',
+	version='1.5',
 	py_modules=['bcoding',],
 	description='bencoding & -decoding library',
 	author='Phil Schaf',
